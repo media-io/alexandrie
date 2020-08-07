@@ -1,0 +1,34 @@
+# Search for crates.
+GET /api/v1/crates?{q}&{page?}&{per_page?}
+- {q}: Query to search with (required).
+- {page}: Number of the page to load (optional).
+- {per_page}: Number of results per page (optional).
+
+# Publish a new crate.
+PUT /api/v1/crates/new
+
+# Owner/Author management
+GET /api/v1/crates/{name}/owners
+- {name}: Name of the crate.
+PUT /api/v1/crates/{name}/owners
+- {name}: Name of the crate.
+DELETE /api/v1/crates/{name}/owners
+- {name}: Name of the crate.
+
+# (Un)yank a crate.
+DELETE /api/v1/crates/{name}/{version}/yank
+- {name}: Name of the crate.
+- {version}: Version of the crate to yank.
+PUT /api/v1/crates/{name}/{version}/unyank
+- {name}: Name of the crate.
+- {version}: Version of the crate to unyank.
+
+# Download a crate's content.
+GET /api/v1/crates/{name}/{version}/download
+- {name}: Name of the crate.
+- {version}: Version of the crate to download.
+
+# List all categories.
+GET /api/v1/categories
+GET /api/v1/categories/{tag}
+- {tag}: Tag of the category (eg. 'development-tools')

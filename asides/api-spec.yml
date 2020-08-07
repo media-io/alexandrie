@@ -1,0 +1,202 @@
+swagger: '2.0'
+schemes:
+  - https
+host: crates.polomack.eu
+basePath: /api/v1
+info:
+  contact:
+    name: Nicolas Polomack
+    url: 'https://polomack.eu'
+  description: |
+    Description of Alexandrie's programmatic API.
+
+    Some of this API is directly used by Cargo and described in Cargo's Alternative Registries RFC.
+  title: Alexandrie
+  version: 0.1.0
+  # x-logo:
+  #   url: ''
+externalDocs:
+  description: Alexandrie's user documentation
+  url: 'https://hirevo.github.io/alexandrie'
+produces:
+  - application/json
+# TODO: securityDefinitions:
+tags:
+  - description: Interact with crates
+    name: crates
+  - description: Get information about crate categories
+    name: categories
+  - description: Manage user account
+    name: account
+
+paths:
+  '/crates':
+    get:
+      summary: Search through all the registry's crates.
+      description: |
+        Search through all the registry's crates.
+      parameters:
+        - name: q
+          description: The string to search with.
+          in: query
+          type: string
+          required: true
+        - name: per_page
+          description: The number of entries per page.
+          in: query
+          type: integer
+        - name: page
+          description: The page number to get results of.
+          in: query
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: List of search results.
+          schema:
+            $ref: '#/definitions/SearchResults'
+      tags:
+        - crates
+  '/crates/{name}':
+    get:
+      summary: Get information about a specific crate.
+      description: |
+        Get information about a specific crate.
+      parameters:
+        - description: The crate's name.
+          in: path
+          name: name
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Details about the crate.
+          schema:
+            $ref: '#/definitions/CrateDescription'
+      tags:
+        - crates
+  '/crates/{name}/{version}/download':
+    get:
+      summary: Download the contents of a crate.
+      description: |
+        Download the contents of a crate (as a GZIP-compressed TAR archive).
+      parameters:
+        - description: The crate's name.
+          in: path
+          name: name
+          required: true
+          type: string
+        - description: The crate's version to download.
+          in: path
+          name: version
+          required: true
+          type: string
+      produces:
+        - application/octet-stream
+      responses:
+        '200':
+          description: The crate's contents (as a GZIP-compressed TAR archive).
+          schema:
+            type: file
+      tags:
+        - crates
+  '/crates/new':
+    put:
+      summary: Publish a new crate to the registry.
+      description: |
+        Publish a new crate to the registry. (not easily usable by humans)
+      parameters:
+        - description: |
+            Metadata about the crate, followed by the crate's contents.
+          name: body
+          # schema:
+          #   $ref: '#/definitions/CratePublishBody'
+          in: body
+          required: true
+      responses:
+        '200':
+          description: Report about how the publication went (warnings, etc...).
+          # schema:
+          #   $ref: '#/definitions/CratePublishResponse'
+      tags:
+        - crates
+
+definitions:
+  SearchResults:
+    type: object
+    properties:
+      crates:
+        type: array
+        description: List of search results
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the crate
+            max_version:
+              type: string
+              description: Last version of the crate
+            description:
+              type: string
+              description: Description of the crate
+            downloads:
+              type: integer
+              description: Total number of downloads
+            created_at:
+              type: string
+              description: Date of creation of the crate
+            updated_at:
+              type: string
+              description: Date of the last modification of the crate
+            documentation:
+              type: string
+              description: Link to the crate's documentation page
+            repository:
+              type: string
+              description: Link to the crate's repository page
+      meta:
+        type: object
+        properties:
+          total:
+            type: integer
+            description: Total number of search results
+  CrateDescription:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the crate
+      description:
+        type: string
+        description: Description of the crate
+      repository:
+        type: string
+        description: Link to the crate's repository page
+      documentation:
+        type: string
+        description: Link to the crate's documentation page
+      downloads:
+        type: integer
+        description: Total number of downloads
+      created_at:
+        type: string
+        description: Date of creation of the crate
+      updated_at:
+        type: string
+        description: Date of the last modification of the crate
+      keywords:
+        type: array
+        description: Keywords of the crate
+        items:
+          type: string
+          description: Keyword of the crate
+      categories:
+        type: array
+        description: Categories of the crate
+        items:
+          type: string
+          description: Category of the crate
