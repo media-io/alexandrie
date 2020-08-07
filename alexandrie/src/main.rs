@@ -25,9 +25,12 @@ extern crate log;
 #[macro_use(slog_o)]
 extern crate slog;
 
-use std::io;
-use std::path::PathBuf;
 use std::sync::Arc;
+
+#[cfg(feature = "frontend")]
+use std::io;
+#[cfg(feature = "frontend")]
+use std::path::PathBuf;
 
 use async_std::fs;
 
