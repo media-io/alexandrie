@@ -37,4 +37,4 @@ services:
 secrets:
   postgres_root_pass:
     # this path is relative to the repo's root docker-compose file
-    file: ./docker/postgresql/rootpass.txt
+    file: ./docker/postgres/rootpass.txt
