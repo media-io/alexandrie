@@ -5,25 +5,27 @@
 ### First stage: build the application
 FROM rust:1.44-slim-buster as builder
 
-ARG DATABASE
+ARG DATABASE=postgres
 
-RUN apt update
-RUN apt install -y clang libssl-dev pkg-config
+RUN echo ${DATABASE} && \
+    apt-get update && \
+    apt-get install -y clang libssl-dev pkg-config
+
 # install proper dependencies for each database
 # for postgresql and mysql, install diesel as well to set up the database
 # for sqlite make a dummy file for Docker to copy
 RUN \
     if [ "${DATABASE}" = "sqlite" ]; then \
-        apt install -y sqlite3 libsqlite3-dev; \
+        apt-get install -y sqlite3 libsqlite3-dev; \
         mkdir -p /usr/local/cargo/bin/; \
         touch /usr/local/cargo/bin/diesel; \
     fi && \
     if [ "${DATABASE}" = "postgres" ]; then \
-        apt install -y  libpq-dev; \
+        apt-get install -y  libpq-dev; \
         cargo install diesel_cli --no-default-features --features "postgres"; \
     fi && \
     if [ "${DATABASE}" = "mysql" ]; then \
-        apt install -y default-libmysqlclient-dev; \
+        apt-get install -y default-libmysqlclient-dev; \
         cargo install diesel_cli --no-default-features --features "mysql"; \
     fi
 
@@ -50,11 +52,11 @@ FROM debian:buster-slim as runner
 ARG DATABASE
 
 # install run dependencies, then clean up apt cache
-RUN apt update && \
-    apt install -y openssh-client git && \
-    if [ "${DATABASE}" = "sqlite" ]; then apt install -y sqlite3; fi && \
-    if [ "${DATABASE}" = "postgres" ]; then apt install -y  postgresql; fi && \
-    if [ "${DATABASE}" = "mysql" ]; then apt install -y default-mysql-server default-mysql-client; fi && \
+RUN apt-get update && \
+    apt-get install -y openssh-client git && \
+    if [ "${DATABASE}" = "sqlite" ]; then apt-get install -y sqlite3; fi && \
+    if [ "${DATABASE}" = "postgres" ]; then apt-get install -y  postgresql; fi && \
+    if [ "${DATABASE}" = "mysql" ]; then apt-get install -y default-mysql-server default-mysql-client; fi && \
     apt-get clean && rm -rf /var/lib/apt/lists/
 
 # copy run files
