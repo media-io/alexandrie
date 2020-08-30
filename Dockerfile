@@ -21,7 +21,7 @@ RUN \
         touch /usr/local/cargo/bin/diesel; \
     fi && \
     if [ "${DATABASE}" = "postgres" ]; then \
-        apt-get install -y  libpq-dev; \
+        apt-get install -y libpq-dev; \
         cargo install diesel_cli --no-default-features --features "postgres"; \
     fi && \
     if [ "${DATABASE}" = "mysql" ]; then \
@@ -49,13 +49,13 @@ RUN cd alexandrie && cargo build --release --no-default-features --features "${D
 ### Second stage: copy built application
 FROM debian:buster-slim as runner
 
-ARG DATABASE
+ARG DATABASE=postgres
 
 # install run dependencies, then clean up apt cache
 RUN apt-get update && \
     apt-get install -y openssh-client git && \
     if [ "${DATABASE}" = "sqlite" ]; then apt-get install -y sqlite3; fi && \
-    if [ "${DATABASE}" = "postgres" ]; then apt-get install -y  postgresql; fi && \
+    if [ "${DATABASE}" = "postgres" ]; then apt-get install -y postgresql; fi && \
     if [ "${DATABASE}" = "mysql" ]; then apt-get install -y default-mysql-server default-mysql-client; fi && \
     apt-get clean && rm -rf /var/lib/apt/lists/
 
